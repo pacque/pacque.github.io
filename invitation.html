@@ -278,15 +278,28 @@
   // ---------- tracking: which household opened, came through the doors, reached and tapped the RSVP ----------
   var TRACK_URL = 'https://script.google.com/macros/s/AKfycbxBf4s02clTJ3wnW7EI16MfsOAeQY9Tl7mhavk6Itu2BbjCD-vTguHuBn6NTr03RmV-/exec';   // the invitation tracking web app address goes here
   var tid = params.get('t'), sentOnce = {};
+  // a short description of the device, written to the log tab so a scanner can be told from a guest
+  function deviceInfo(){
+    var q = '';
+    try {
+      q += '&s=' + encodeURIComponent((screen.width || 0) + 'x' + (screen.height || 0));
+      q += '&w=' + (navigator.webdriver ? 1 : 0);
+      q += '&tp=' + (navigator.maxTouchPoints || 0);
+      q += '&tz=' + encodeURIComponent((Intl.DateTimeFormat().resolvedOptions().timeZone) || '');
+      q += '&ua=' + encodeURIComponent(String(navigator.userAgent || '').slice(0, 220));
+    } catch(err){}
+    return q;
+  }
   function track(a){
     if (!TRACK_URL || !tid || sentOnce[a]) return; sentOnce[a] = 1;
-    try { new Image().src = TRACK_URL + '?a=' + a + '&id=' + encodeURIComponent(tid) + '&n=' + Date.now(); } catch(err){}
+    try { new Image().src = TRACK_URL + '?a=' + a + '&id=' + encodeURIComponent(tid) + '&n=' + Date.now() + deviceInfo(); } catch(err){}
   }
   if (TRACK_URL && tid) {
-    // count an open only on a real human signal, so link previews and prefetchers are not logged
+    // "Opened" counts only when a person touches, clicks or types. Scanners and link previewers never do.
     var opened1 = function(){ track('o'); };
     ['pointerdown', 'touchstart', 'keydown'].forEach(function(ev){ window.addEventListener(ev, opened1, { once:true, passive:true }); });
-    var arm = function(){ if (document.visibilityState === 'visible') setTimeout(opened1, 2500); };
+    // a page that is only looked at is written to the log tab as a view, and never counted as an open
+    var arm = function(){ if (document.visibilityState === 'visible') setTimeout(function(){ track('v'); }, 2500); };
     document.addEventListener('visibilitychange', arm); arm();
   }
 
