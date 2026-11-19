@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alyssa &amp; Derek &middot; The Invitation</title>
+<meta property="og:title" content="Alyssa Vera & Derek Pacqué · The Invitation">
+<meta property="og:description" content="Sunday, February 14, 2027 · The Ancient Spanish Monastery · The doors are open.">
+<meta property="og:image" content="https://pacque.github.io/og-invitation.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://pacque.github.io/invitation">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pacque.github.io/og-invitation.jpg">
+<meta name="theme-color" content="#030303">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preload" as="image" href="door-wall.webp">
+<link rel="preload" as="image" href="cloister.jpg">
+<link href="fonts.css" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { background:#030303; }
+  body { color:#F5F1E9; font-family:'Cormorant Garamond',Georgia,serif; -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none; }
+  #spacer { display:none; width:1px; }
+  body.open #spacer { display:block; }
+
+  #stage { position:fixed; inset:0; overflow:hidden; z-index:1; background:#030303; }
+  /* a portrait frame holds both photographs; on wide screens it sits centered in the dark */
+  #frame { position:absolute; top:0; bottom:0; overflow:hidden; }
+  #frame::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:6;
+    background:radial-gradient(ellipse 85% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); }
+  body.wide #frame::after { background:
+    linear-gradient(90deg, #030303 0, rgba(3,3,3,0) 14%, rgba(3,3,3,0) 86%, #030303 100%),
+    radial-gradient(ellipse 85% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); }
+
+  /* the cloister, waiting behind the doors */
+  #hall { position:absolute; background:#050403 url(cloister.jpg) center / 100% 100% no-repeat;
+    transform-origin:50% 51.7%; will-change:transform; }
+  #hall video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; filter:brightness(.84) contrast(1.05); }
+  /* Back and Next sit together, centered under the invitation; whichever is alone takes the middle */
+  #next, #back { text-shadow:0 1px 8px rgba(0,0,0,.9); color:rgba(235,230,222,.95); font-size:12px; padding:11px 18px;
+    border:1px solid rgba(167,164,160,.45); border-radius:22px; background:rgba(5,5,5,.45);
+    transition:opacity .6s ease, transform .5s ease, border-color .25s ease; }
+  #next:hover, #back:hover { border-color:rgba(245,241,233,.8); }
+  body:not(.canback) #next { transform:translateX(-50%); }
+  body.arrived #back { transform:translateX(-50%); }
+  #wall { position:absolute; top:0; height:100%; transform-origin:50% 61.8%; will-change:transform, opacity; }
+  #wall > img { position:absolute; inset:0; width:100%; height:100%; display:block; filter:brightness(.86) contrast(1.06); }
+  .leaf { filter:brightness(.92); }
+  .glow { position:absolute; border-radius:50%; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(circle, rgba(255,190,110,.5), rgba(255,160,80,.16) 40%, rgba(255,160,80,0) 70%);
+    transform:translate(-50%,-50%); animation:flick 2.3s ease-in-out infinite; }
+  @keyframes flick { 0%,100% { opacity:.55; } 18% { opacity:.9; } 37% { opacity:.62; } 55% { opacity:1; } 71% { opacity:.7; } 86% { opacity:.92; } }
+  #scrim { position:absolute; inset:0; opacity:0; pointer-events:none; z-index:2; transition:opacity 1.4s ease;
+    background:radial-gradient(ellipse 74% 42% at 50% 52%, rgba(3,3,3,.76), rgba(3,3,3,.46) 58%, rgba(3,3,3,0) 100%); }
+  .st { text-shadow:0 1px 12px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.6); }
+  .st .foil, .st .btn { text-shadow:none; }
+
+  /* ---------- the doors, cut from the photograph ---------- */
+  #doors { position:absolute; left:28.67%; top:42.77%; width:43.01%; height:38.09%; perspective:1400px;
+    cursor:pointer; outline:none; }
+  .leaf { position:absolute; top:0; bottom:0; width:50%; overflow:hidden; background-size:100% 100%;
+    transition:transform 2.9s cubic-bezier(.62,.04,.22,1), filter 2.9s ease; backface-visibility:hidden; }
+  .leaf.l { left:0; transform-origin:left center; background-image:url(door-leaf-l.webp); }
+  .leaf.r { right:0; transform-origin:right center; background-image:url(door-leaf-r.webp); }
+  body.open .leaf.l { transform:rotateY(104deg); filter:brightness(.5); }
+  body.open .leaf.r { transform:rotateY(-104deg); filter:brightness(.5); }
+  body.instant .leaf { transition:none; }
+  .seal { position:absolute; top:54%; width:calc(74px * var(--u)); height:calc(74px * var(--u)); border-radius:50%;
+    margin-top:calc(-37px * var(--u));
+    background:radial-gradient(circle at 36% 28%, #3a2f22, #17120d 62%, #0b0907);
+    border:1px solid #8e6f45;
+    box-shadow:0 0 0 calc(3px * var(--u)) #0d0a08, 0 0 0 calc(4px * var(--u)) rgba(160,124,76,.55), 0 6px 16px rgba(0,0,0,.85), inset 0 1px 2px rgba(255,220,170,.18);
+    transition:box-shadow .5s ease; }
+  .leaf.l .seal { right:calc(-37px * var(--u)); } .leaf.r .seal { left:calc(-37px * var(--u)); }
+  .seal img { position:absolute; left:17%; top:19%; width:66%; height:62%; object-fit:contain; display:block; }
+  body:not(.open) #doors:hover .seal, body:not(.open) #doors:focus-visible .seal {
+    box-shadow:0 0 0 calc(3px * var(--u)) #0d0a08, 0 0 0 calc(4px * var(--u)) rgba(234,184,114,.9), 0 0 30px rgba(234,184,114,.4); }
+  .seam { position:absolute; left:50%; top:9%; bottom:0; width:2px; margin-left:-1px; z-index:3; pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,206,140,0), rgba(255,206,140,.5) 30%, rgba(255,206,140,.7) 62%, rgba(255,206,140,.25));
+    filter:blur(1.2px); animation:seam 3.6s ease-in-out infinite; }
+  @keyframes seam { 0%,100% { opacity:.25; } 50% { opacity:.8; } }
+  body.open .seam { display:none; }
+
+  #bloom { position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0; mix-blend-mode:screen;
+    background:radial-gradient(circle at 50% 62%, rgba(255,214,150,.7), rgba(234,170,100,.26) 30%, rgba(234,170,100,0) 66%); }
+  body.open:not(.instant) #bloom { animation:bloom 3.6s ease-out forwards; }
+  @keyframes bloom { 0% { opacity:0; } 30% { opacity:1; } 100% { opacity:0; } }
+  .dust { position:absolute; border-radius:50%; background:#e8c48c; z-index:4; pointer-events:none;
+    animation:float linear infinite; opacity:0; }
+  @keyframes float { 0% { transform:translateY(12vh); opacity:0; } 12% { opacity:var(--o); } 88% { opacity:var(--o); } 100% { transform:translateY(-105vh); opacity:0; } }
+
+  /* ---------- the threshold: greeting and hint ---------- */
+  #threshold { position:absolute; left:0; right:0; z-index:5; text-align:center; pointer-events:none;
+    padding:0 20px; transition:opacity .7s ease, transform .9s ease; }
+  body.open #threshold { opacity:0; transform:translateY(10px); }
+  #threshold { text-shadow:0 1px 10px rgba(0,0,0,.9), 0 0 3px rgba(0,0,0,.9); }
+  .g-name { font-style:italic; font-size:calc(24px * var(--u)); color:#F5F1E9; }
+  .g-exp { font-family:'Cinzel',serif; text-transform:uppercase; font-size:calc(11px * var(--u));
+    letter-spacing:.42em; text-indent:.42em; color:#D8D3CB; margin-top:calc(7px * var(--u)); }
+  .g-hint { font-family:'Cinzel',serif; text-transform:uppercase; font-size:calc(12.5px * var(--u));
+    letter-spacing:.36em; text-indent:.36em; margin-top:calc(20px * var(--u)); color:#F0C98A;
+    animation:pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:.6; } 50% { opacity:1; } }
+
+  /* ---------- gold foil, matched to the wedding website ---------- */
+  .foil { color:#C79A5E;
+    background:linear-gradient(117.55deg,#EAB872 0%,#8A5A30 22%,#C99B5F 38%,#F0C98A 50%,#B98A50 62%,#80522B 80%,#EAB872 100%);
+    background-size:220% 100%; -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; animation:foil 9s ease-in-out infinite alternate; }
+  @keyframes foil { from { background-position:0% 50%; } to { background-position:100% 50%; } }
+
+  /* ---------- stations along the cloister ---------- */
+  .st { position:absolute; left:50%; z-index:5; text-align:center; opacity:0; pointer-events:none;
+    transform:translate(-50%,-50%) scale(.95); transition:opacity 1.1s ease, transform 9s cubic-bezier(.2,.5,.3,1);
+    will-change:transform, opacity; }
+  .st.on { opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+  .st.gone { opacity:0; transform:translate(-50%,-50%) scale(1.07); transition:opacity .8s ease, transform 1.2s ease; }
+  .eyebrow, .label { font-family:'Cinzel',serif; font-weight:500; text-transform:uppercase;
+    font-size:calc(11px * var(--u)); letter-spacing:.32em; text-indent:.32em; color:#A7A4A0; text-wrap:balance; }
+  .names { font-weight:400; text-transform:uppercase; font-size:calc(31px * var(--u)); line-height:1.1;
+    letter-spacing:.03em; margin-top:calc(16px * var(--u)); }
+  .names .n { display:block; }
+  .names .amp { display:block; font-style:italic; text-transform:none; color:#F5F1E9;
+    -webkit-text-fill-color:#F5F1E9; font-size:.62em; line-height:1.35; opacity:.85; }
+  .request { font-style:italic; font-size:calc(18.5px * var(--u)); line-height:1.5; color:rgba(245,241,233,.9);
+    margin-top:calc(18px * var(--u)); }
+  .date { font-weight:500; font-size:calc(27px * var(--u)); line-height:1.2; text-wrap:balance; }
+  .year { font-style:italic; font-size:calc(19px * var(--u)); color:rgba(245,241,233,.85); margin-top:calc(5px * var(--u)); }
+  .rule { width:calc(110px * var(--u)); height:1px; background:rgba(199,154,94,.55);
+    margin:calc(24px * var(--u)) auto; position:relative; }
+  .rule::after { content:''; position:absolute; left:50%; top:50%; width:5px; height:5px; background:#C79A5E;
+    transform:translate(-50%,-50%) rotate(45deg); }
+  .time { font-family:'Cinzel',serif; text-transform:uppercase; font-size:calc(12.5px * var(--u));
+    letter-spacing:.24em; text-indent:.24em; color:#F5F1E9; text-wrap:balance; line-height:1.6; }
+  .quiet { font-style:italic; font-size:calc(17px * var(--u)); color:rgba(190,186,180,.98); margin-top:calc(8px * var(--u)); }
+  .venue { font-family:'Cinzel',serif; text-transform:uppercase; font-size:calc(18px * var(--u));
+    letter-spacing:.18em; text-indent:.18em; line-height:1.5; text-wrap:balance; margin-top:calc(14px * var(--u)); }
+  .city { font-family:'Cinzel',serif; text-transform:uppercase; font-size:calc(11px * var(--u));
+    letter-spacing:.28em; text-indent:.28em; color:#A7A4A0; margin-top:calc(12px * var(--u)); text-wrap:balance; }
+  .v2 { font-size:calc(16.5px * var(--u)); margin-top:calc(22px * var(--u)); }
+  .st .rule { margin:calc(18px * var(--u)) auto; }
+  .attire { font-size:calc(17px * var(--u)); }
+  .big { font-size:calc(23px * var(--u)); margin-top:calc(12px * var(--u)); }
+  .mask { width:calc(190px * var(--u)); height:auto; display:block; margin:calc(18px * var(--u)) auto calc(4px * var(--u));
+    transform:translateX(-5%); filter:drop-shadow(0 12px 26px rgba(0,0,0,.7)); }
+
+  .mono { width:calc(96px * var(--u)); height:auto; display:block; margin:0 auto calc(14px * var(--u)); filter:drop-shadow(0 2px 10px rgba(0,0,0,.7)); }
+  .by { font-size:calc(18.5px * var(--u)); line-height:1.35; text-wrap:balance; }
+  .btn { font-family:'Cinzel',serif; font-weight:500; font-size:calc(15px * var(--u)); letter-spacing:.3em;
+    text-indent:.3em; text-transform:uppercase; color:#090909;
+    background:linear-gradient(180deg,#d2cfcb,#8f8c88); border-radius:2px;
+    padding:calc(16px * var(--u)) calc(50px * var(--u)); text-decoration:none; display:inline-block;
+    margin-top:calc(18px * var(--u)); box-shadow:0 10px 30px rgba(0,0,0,.6);
+    transition:filter .25s ease, transform .25s ease; }
+  .btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+  .how { font-style:italic; font-size:calc(15px * var(--u)); color:rgba(190,186,180,.98);
+    margin-top:calc(12px * var(--u)); line-height:1.4; text-wrap:balance; }
+  .links { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:calc(18px * var(--u)); }
+  .link { font-family:'Cinzel',serif; font-size:calc(10.5px * var(--u)); letter-spacing:.12em; text-transform:uppercase;
+    color:#BDB9B4; border:1px solid rgba(167,164,160,.55); border-radius:2px; background:rgba(9,9,9,.5);
+    padding:calc(11px * var(--u)) calc(12px * var(--u)); text-decoration:none; white-space:nowrap;
+    transition:color .25s ease, border-color .25s ease; }
+  .link:hover { color:#F5F1E9; border-color:rgba(245,241,233,.7); }
+  .wait { font-style:italic; font-size:calc(16px * var(--u)); color:rgba(190,186,180,.95); margin-top:calc(18px * var(--u)); }
+  .plain { display:inline-block; margin-top:calc(10px * var(--u)); font-style:italic; font-size:calc(14px * var(--u));
+    color:#A7A4A0; text-decoration:none; border-bottom:1px solid rgba(167,164,160,.4); }
+  a:focus-visible, button:focus-visible { outline:1px solid #F5F1E9; outline-offset:4px; }
+
+  /* ---------- small controls ---------- */
+  .ui { position:fixed; z-index:10; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px;
+    letter-spacing:.04em; color:rgba(190,186,180,.85); background:none; border:none; cursor:pointer;
+    text-decoration:none; transition:opacity .6s ease; }
+  #skip { top:calc(12px + env(safe-area-inset-top)); left:16px; padding:6px 4px;
+    border-bottom:none; }
+  #skip span, #again span { border-bottom:1px solid rgba(167,164,160,.35); }
+  #again { top:calc(12px + env(safe-area-inset-top)); left:16px; padding:6px 4px; opacity:0; pointer-events:none; }
+  body.arrived #again { opacity:1; pointer-events:auto; }
+  #music { top:calc(12px + env(safe-area-inset-top)); right:14px; border:1px solid rgba(167,164,160,.35);
+    border-radius:20px; padding:5px 14px; opacity:0; pointer-events:none; }
+  body.open #music { opacity:1; pointer-events:auto; }
+  #next { left:50%; transform:translateX(8px); bottom:calc(16px + env(safe-area-inset-bottom)); display:flex; align-items:center; gap:8px;
+    font-family:'Cinzel',serif; font-style:normal; font-size:11px; letter-spacing:.3em;
+    text-transform:uppercase; padding:12px 10px; opacity:0; pointer-events:none; }
+  #next svg { width:7px; height:13px; }
+  @keyframes nudge { 0%,100% { transform:translateY(0); opacity:.6; } 50% { transform:translateY(4px); opacity:1; } }
+  #back { left:50%; transform:translateX(calc(-100% - 8px)); bottom:calc(16px + env(safe-area-inset-bottom)); font-family:'Cinzel',serif; font-style:normal;
+    font-size:11px; letter-spacing:.3em; text-transform:uppercase; padding:12px 10px; opacity:0; pointer-events:none;
+    display:flex; align-items:center; gap:8px; }
+  #back svg { width:7px; height:13px; }
+  body.walking.canback #back { opacity:1; pointer-events:auto; }
+  body.walking #next { opacity:1; pointer-events:auto; }
+  body.arrived #next, body.arrived #skip { opacity:0; pointer-events:none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf { transition-duration:.01s; } #bloom { display:none; }
+    .foil, .g-hint, .seam { animation:none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+ <div id="frame">
+  <div id="hall"><video id="walk" muted playsinline preload="auto" src="cloister-walk-v3.mp4" poster="cloister.jpg"></video></div>
+  <div id="scrim"></div>
+  <div id="wall">
+    <img src="door-wall.webp" alt="">
+    <i class="glow" style="left:14%;top:81.5%;width:44%;height:24%"></i>
+    <i class="glow" style="left:84%;top:81.5%;width:44%;height:24%;animation-duration:2.8s"></i>
+    <div id="doors" role="button" tabindex="0" aria-label="Push the doors open to see your invitation">
+      <div class="leaf l"><div class="seal"><img src="ad-logo-gold.webp" alt=""></div></div>
+      <div class="leaf r"><div class="seal"><img src="ad-logo-gold.webp" alt=""></div></div>
+      <div class="seam"></div>
+    </div>
+  </div>
+  <div id="bloom"></div>
+
+  <div id="threshold">
+    <div class="g-name" id="gName" hidden></div>
+    <div class="g-exp">You Are Expected</div>
+    <div class="g-hint">Push the Doors Open</div>
+  </div>
+
+  <section class="st" data-k="1">
+    <div class="eyebrow">Together with Their Families</div>
+    <h1 class="names"><span class="n foil">Alyssa Vera</span><span class="amp">&amp;</span><span class="n foil">Derek Pacqu&eacute;</span></h1>
+    <p class="request">request the honor of your presence<br>at the celebration of their marriage</p>
+  </section>
+
+  <section class="st" data-k="2">
+    <div class="date"><span class="foil">Sunday, the fourteenth of February</span></div>
+    <div class="year">two thousand twenty-seven</div>
+    <div class="rule"></div>
+    <div class="time">Ceremony at Half Past Five</div>
+    <div class="quiet">Doors open at five o&rsquo;clock</div>
+    <div class="venue v2">The Ancient Spanish Monastery</div>
+    <div class="city">North Miami Beach, Florida</div>
+    <div class="quiet">Reception to follow</div>
+    <div class="rule"></div>
+    <div class="attire">Black Tie Optional &middot; Masks Encouraged</div>
+  </section>
+
+  <section class="st" data-k="3">
+    <img class="mono" src="ad-logo.webp" width="520" height="419" alt="A and D monogram">
+    <p class="by">Kindly reply by<br><span class="foil">Monday, January 4, 2027</span></p>
+    <a class="btn" href="https://www.zola.com/wedding/alyssaandderekfebruary14/rsvp" target="_blank" rel="noopener">RSVP</a>
+    <p class="how">Enter your first and last name to find your invitation</p>
+    <div class="links">
+      <a class="link" href="https://www.zola.com/wedding/alyssaandderekfebruary14" target="_blank" rel="noopener">Travel &amp; Details</a>
+      <a class="link" href="alyssa-derek-invitation.ics">Add to Calendar</a>
+    </div>
+    <p class="wait">We can&rsquo;t wait to celebrate with you</p>
+    <a class="plain" id="plain" href="invitation-card.html">see the invitation on one page</a>
+  </section>
+ </div>
+</div>
+
+<a class="ui" id="skip" href="#invitation"><span>skip to the invitation</span></a>
+<a class="ui" id="again" href="#start"><span>start over</span></a>
+<button class="ui" id="music" type="button">&#9835; music off</button>
+ <button class="ui" id="back" type="button" aria-label="Go back one step"><svg viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 1L1 9l8 8"/></svg>Back</button>
+<button class="ui" id="next" type="button" aria-label="Skip ahead to the next part">Next<svg viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 1l8 8-8 8"/></svg></button>
+<div id="spacer"></div>
+
+<script>
+(function(){
+  'use strict';
+  var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var params = new URLSearchParams(location.search);
+  var g = params.get('g');
+  if (g) { var gn = document.getElementById('gName'); gn.textContent = g + ','; gn.hidden = false; }
+  document.getElementById('plain').href = 'invitation-card.html' + location.search;
+
+  var IMG_AR = 572 / 1024, HALL_H = 0.8, VPY = 0.517, ZFULL = 1 / HALL_H;
+  // the walk is one unbroken film; the words come and go over it at these moments (seconds)
+  var STARTS = [0, 6.3, 14.3], ENTER_MS = 3200, FILM = 16.29;
+  var frame = document.getElementById('frame'), hall = document.getElementById('hall'), wall = document.getElementById('wall');
+  var scrim = document.getElementById('scrim'), doors = document.getElementById('doors'), threshold = document.getElementById('threshold');
+  var stations = Array.prototype.slice.call(document.querySelectorAll('.st'));
+  var vid = document.getElementById('walk');
+  var W, H, opened = false, enter = 0, entering = false, walking = false, t = 0, stage = 0, lastNow = 0, lastSeek = 0;
+  function clamp(v, lo, hi){ return v < lo ? lo : v > hi ? hi : v; }
+  var pending = null, manual = false, held = false;
+  vid.addEventListener('loadedmetadata', function(){ if (pending !== null) { var pt = Math.max(pending, t); pending = null; try { vid.currentTime = Math.min(pt, vid.duration - .05); } catch(err){} } });
+
+  function layout(){
+    W = window.innerWidth; H = window.innerHeight;
+    var iw = H * IMG_AR, fw = Math.min(W, iw);
+    document.body.classList.toggle('wide', W > iw + 2);
+    frame.style.width = fw + 'px'; frame.style.left = ((W - fw) / 2) + 'px';
+    wall.style.width = iw + 'px'; wall.style.left = ((fw - iw) / 2) + 'px';
+    // the cloister starts small enough to sit behind the doorway, and grows to fill the frame as you step in
+    var hh = H * HALL_H, hw = hh * IMG_AR;
+    hall.style.width = hw + 'px'; hall.style.height = hh + 'px';
+    hall.style.left = ((fw - hw) / 2) + 'px'; hall.style.top = (H * VPY * (1 - HALL_H)) + 'px';
+    var u = clamp(fw / 390, .8, 1.25);
+    document.documentElement.style.setProperty('--u', u.toFixed(4));
+    threshold.style.top = (H * .835) + 'px';
+    var pw = Math.min(fw - 44 * u, 560);
+    stations.forEach(function(s){ s.style.width = pw + 'px'; s.style.top = (H * .52) + 'px'; });
+    place();
+  }
+  // stepping through the doorway: the wall is nearer than the hall, so it rushes past faster
+  function place(){
+    var e = enter * enter * (3 - 2 * enter), z = 1 + (ZFULL - 1) * e;
+    hall.style.transform = 'scale(' + z.toFixed(4) + ')';
+    if (enter < 1) {
+      wall.style.display = ''; wall.style.transform = 'scale(' + (1 + Math.pow(e, 1.6)).toFixed(4) + ')';   // kept slow enough that the hall always fills the doorway
+      wall.style.opacity = clamp((1 - enter) / .4, 0, 1).toFixed(3);
+    } else wall.style.display = 'none';
+  }
+  function setStage(k){
+    if (k === stage) return; stage = k;
+    stations.forEach(function(el, i){
+      el.classList.toggle('on', i + 1 === k); el.classList.toggle('gone', i + 1 < k);
+    });
+    scrim.style.opacity = k > 0 ? '1' : '0';
+    document.body.classList.toggle('arrived', k >= stations.length);
+    document.body.classList.toggle('canback', k >= 2);
+  }
+  function stageAt(time){ var k = 1; for (var i = 1; i < STARTS.length; i++) if (time >= STARTS[i]) k = i + 1; return k; }
+  function seek(time){
+    t = clamp(time, 0, FILM); setStage(stageAt(t));
+    if (vid.readyState >= 1) { pending = null; try { vid.currentTime = Math.min(t, (vid.duration || FILM) - .05); } catch(err){} }
+    else pending = t;   // the film has not arrived yet: jump it there as soon as it does
+    if (t < FILM - .1) { var pr = vid.play(); if (pr && pr.catch) pr.catch(function(){}); }
+  }
+  function startWalk(){
+    // only once you are fully through the doors does the walk begin
+    walking = true; document.body.classList.add('walking'); seek(0);
+    if (musicOn && actx) startMusic(0);   // the music begins as you step into the cloister
+  }
+  function tick(now){
+    var dt = Math.min(.1, (now - (lastNow || now)) / 1000); lastNow = now;
+    if (entering) {
+      enter = clamp(enter + dt * 1000 / (REDUCED ? 1 : ENTER_MS), 0, 1); place();
+      if (enter >= 1) { entering = false; startWalk(); }
+    } else if (walking && manual && stage < STARTS.length && t >= STARTS[stage] - .25) {
+      // they went back, so this part waits here until they tap Next
+      if (!held) { held = true; try { vid.pause(); } catch(err){} }
+    } else if (walking && t < FILM) {
+      // the film is the clock when it is running; if it stalls, the words keep their own time
+      if (vid.readyState >= 2 && pending === null) {
+        // the film is the clock: the words only move on when the walk does
+        if (!vid.seeking) {
+          if (vid.paused && !vid.ended && t < (vid.duration || FILM) - .15) {
+            if (now - lastSeek > 600) { lastSeek = now; var rp = vid.play(); if (rp && rp.catch) rp.catch(function(){}); }
+          } else if (vid.ended) t = FILM;
+          else if (vid.currentTime > t - 1) t = vid.currentTime;
+          else t += dt;   // the film could not jump here, so the words keep their own time
+        }
+      } else t += dt;   // no film yet: keep time by the clock so the invitation still works
+      setStage(stageAt(t));
+    }
+    requestAnimationFrame(tick);
+  }
+  document.getElementById('next').addEventListener('click', function(){ if (walking && stage < STARTS.length) { held = false; seek(STARTS[stage]); } });
+  document.getElementById('back').addEventListener('click', function(){ if (walking && stage > 1) { manual = true; held = false; seek(STARTS[stage - 2]); } });
+
+  // ---------- sound: a bell at the doors, then the quartet ----------
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var actx = null, master = null, musicOn = true, srcNode = null, decoding = null;
+  var LOOP_DUR = 1086624 / 44100;
+  var musicBtn = document.getElementById('music');
+  function initAudio(){ if (actx || !AC) return; actx = new AC(); master = actx.createGain(); master.gain.value = 0; master.connect(actx.destination); }
+  function toll(when, gain){
+    if (!actx) return;
+    var t = actx.currentTime + when, out = actx.createGain(); out.gain.value = gain;
+    var lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600; out.connect(lp); lp.connect(actx.destination);
+    [[.5, .9, 7], [1, 1, 6], [1.19, .55, 4.6], [1.5, .4, 3.6], [2, .5, 3], [2.51, .22, 2.2], [3.01, .14, 1.6], [4.1, .07, 1.1]].forEach(function(pr){
+      var o = actx.createOscillator(), gn = actx.createGain();
+      o.type = 'sine'; o.frequency.value = 174.6 * pr[0];
+      gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(pr[1] * .2, t + .008);
+      gn.gain.exponentialRampToValueAtTime(.0001, t + pr[2]);
+      o.connect(gn); gn.connect(out); o.start(t); o.stop(t + pr[2] + .1);
+    });
+  }
+  function decodeMusic(){
+    if (decoding) return decoding;
+    decoding = fetch('stone-arches.mp3').then(function(r){ return r.arrayBuffer(); })
+      .then(function(ab){ return new Promise(function(res, rej){ actx.decodeAudioData(ab, res, rej); }); });
+    return decoding;
+  }
+  function firstSound(buf){ var dd = buf.getChannelData(0); for (var i = 0; i < dd.length; i++) if (Math.abs(dd[i]) > .001) return i / buf.sampleRate; return 0; }
+  function startMusic(delay){
+    initAudio(); if (!actx) return;
+    if (actx.state === 'suspended') actx.resume();
+    musicBtn.innerHTML = '&#9835; music off';
+    decodeMusic().then(function(buf){
+      if (!musicOn) return;
+      if (srcNode) { try { srcNode.stop(); } catch(e){} }
+      var src = actx.createBufferSource(); src.buffer = buf;
+      var s0 = firstSound(buf); src.loop = true; src.loopStart = s0; src.loopEnd = buf.duration;
+      src.connect(master);
+      var t = Math.max(actx.currentTime, startMusic.at || 0);
+      master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(0, t); master.gain.linearRampToValueAtTime(.2, t + 1.8);
+      src.start(t, s0); srcNode = src;
+    }).catch(function(){});
+    startMusic.at = actx.currentTime + (delay || 0);
+  }
+  function stopMusic(){
+    if (!actx || !srcNode) return;
+    var t = actx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(0, t + .6);
+    var dying = srcNode; srcNode = null; setTimeout(function(){ try { dying.stop(); } catch(e){} }, 700);
+  }
+  musicBtn.addEventListener('click', function(){
+    musicOn = !musicOn;
+    if (musicOn) startMusic(0); else { stopMusic(); musicBtn.innerHTML = '&#9835; music on'; }
+  });
+
+  // ---------- opening the doors ----------
+  function openDoors(instant, toStage){
+    if (opened) return; opened = true;
+    if (instant) document.body.classList.add('instant');
+    document.body.classList.add('open');
+    doors.removeAttribute('tabindex'); doors.style.cursor = 'default';
+    if (instant) {
+      musicOn = false; musicBtn.innerHTML = '&#9835; music on';
+      enter = 1; place(); walking = true; document.body.classList.add('walking'); seek(STARTS[(toStage || 1) - 1]);
+      return;
+    }
+    // wake the film inside this tap so phones allow it to play later, but keep the hall perfectly still for now
+    try { var pp = vid.play(); vid.pause(); if (pp && pp.catch) pp.catch(function(){}); } catch(err){}
+    initAudio();
+    if (actx) { if (actx.state === 'suspended') actx.resume(); toll(0, .5); toll(2.1, .3); decodeMusic().catch(function(){}); }
+    setTimeout(function(){ entering = true; }, REDUCED ? 50 : 2300);
+  }
+  doors.addEventListener('click', function(){ openDoors(false); });
+  doors.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDoors(false); } });
+  threshold.style.pointerEvents = 'none';
+  document.getElementById('skip').addEventListener('click', function(e){
+    e.preventDefault();
+    if (!opened) openDoors(true, STARTS.length);
+    else if (walking) seek(STARTS[STARTS.length - 1]);
+    else { entering = false; enter = 1; place(); walking = true; document.body.classList.add('walking'); seek(STARTS[STARTS.length - 1]); }
+  });
+
+  // start over: close the doors and return to the beginning, ready to be opened again
+  document.getElementById('again').addEventListener('click', function(e){
+    e.preventDefault();
+    stopMusic(); musicOn = true; musicBtn.innerHTML = '&#9835; music off';   // a fresh start plays with music again
+    opened = false; walking = false; entering = false; enter = 0; t = 0; manual = false; held = false; pending = null;
+    try { vid.pause(); vid.currentTime = 0; } catch(err){}
+    setStage(0);
+    document.body.classList.remove('open', 'instant', 'walking', 'arrived', 'canback');
+    place();
+    doors.setAttribute('tabindex', '0'); doors.style.cursor = 'pointer';
+  });
+
+  if (!REDUCED) for (var q = 0; q < 16; q++) {
+    var dm = document.createElement('div'); dm.className = 'dust';
+    var sz = 1.5 + Math.random() * 2.5;
+    dm.style.width = dm.style.height = sz + 'px'; dm.style.left = (Math.random() * 100) + '%'; dm.style.top = (55 + Math.random() * 50) + '%';
+    dm.style.setProperty('--o', (0.1 + Math.random() * 0.3).toFixed(2));
+    dm.style.animationDuration = (14 + Math.random() * 18) + 's'; dm.style.animationDelay = (-Math.random() * 20) + 's';
+    frame.appendChild(dm);
+  }
+  layout();
+  window.addEventListener('resize', layout);
+  // leaving the page (RSVP, Travel & Details, switching apps): fade the music out cleanly and stop the audio engine,
+  // so it never squeals or keeps playing behind another page; bring it back when they return
+  function hush(){
+    if (!actx || !master) return;
+    try { var n = actx.currentTime; master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value, n); master.gain.linearRampToValueAtTime(0, n + .12); } catch(err){}
+    setTimeout(function(){ if (document.hidden && actx && actx.state === 'running') { try { actx.suspend(); } catch(err){} } }, 180);
+  }
+  function unhush(){
+    if (!actx || !master) return;
+    var go = function(){ if (!musicOn || !srcNode) return; try { var n = actx.currentTime; master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(0, n); master.gain.linearRampToValueAtTime(.2, n + 1.2); } catch(err){} };
+    if (actx.state !== 'running') { var rs = actx.resume(); if (rs && rs.then) rs.then(go).catch(function(){}); else go(); } else go();
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) hush(); else unhush(); });
+  window.addEventListener('pagehide', hush);
+  Array.prototype.forEach.call(document.querySelectorAll('a[target="_blank"]'), function(lk){ lk.addEventListener('click', function(){ hush(); setTimeout(function(){ if (!document.hidden) unhush(); }, 1500); }); });
+  window.addEventListener('focus', function(){ if (!document.hidden) unhush(); });
+  // coming back to the page: pick the walk up where it left off
+  document.addEventListener('visibilitychange', function(){ lastNow = 0; if (!document.hidden && walking && !held && !vid.ended && t < FILM - .15) { var vp = vid.play(); if (vp && vp.catch) vp.catch(function(){}); } });
+  requestAnimationFrame(tick);
+
+  // for previews: ?at=3 jumps straight to a stop
+  var at = params.get('at');
+  if (at !== null) openDoors(true, clamp(parseInt(at, 10) || 1, 1, STARTS.length));
+})();
+</script>
+</body>
+</html>

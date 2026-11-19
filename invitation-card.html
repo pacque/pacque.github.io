@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alyssa &amp; Derek &middot; The Invitation</title>
+<meta property="og:title" content="Alyssa Vera & Derek Pacqué · The Invitation">
+<meta property="og:description" content="Sunday, February 14, 2027 · The Ancient Spanish Monastery · Kindly reply by January 4, 2027">
+<meta property="og:image" content="https://pacque.github.io/og-invitation.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://pacque.github.io/invitation-card">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pacque.github.io/og-invitation.jpg">
+<meta name="theme-color" content="#090909">
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="fonts.css" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { background:#090909; }
+  body { background:#090909; color:#F5F1E9; font-family:'Cormorant Garamond',Georgia,serif;
+    min-height:100vh; min-height:100dvh; -webkit-font-smoothing:antialiased; }
+  .bg { position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 80% 45% at 50% 0%, rgba(245,241,233,0.07), rgba(9,9,9,0) 62%),
+      radial-gradient(ellipse 150% 120% at 50% 50%, rgba(9,9,9,0) 55%, rgba(2,2,2,0.94) 100%),
+      #090909; }
+  .dust { position:fixed; border-radius:50%; background:#b9b6b1; z-index:0; pointer-events:none;
+    animation:float linear infinite; opacity:0; }
+  @keyframes float {
+    0% { transform:translateY(12vh); opacity:0; }
+    12% { opacity:var(--o); } 88% { opacity:var(--o); }
+    100% { transform:translateY(-105vh); opacity:0; }
+  }
+
+  .wrap { position:relative; z-index:1; max-width:660px; margin:0 auto;
+    padding:clamp(14px,4vw,40px) clamp(12px,3.5vw,24px) calc(clamp(20px,5vw,44px) + env(safe-area-inset-bottom)); }
+
+  /* the card: a double hairline frame, like a letterpress border */
+  .card { position:relative; text-align:center;
+    border:1px solid rgba(167,164,160,.55);
+    padding:clamp(40px,9vw,64px) clamp(22px,7vw,60px) clamp(40px,9vw,60px);
+    background:linear-gradient(180deg, rgba(24,24,24,.5), rgba(9,9,9,.15) 38%, rgba(9,9,9,0)); }
+  .card::before { content:''; position:absolute; inset:7px; border:1px solid rgba(167,164,160,.22);
+    pointer-events:none; }
+
+  .card > * { opacity:0; transform:translateY(12px); animation:rise 1s ease forwards; }
+  .card > :nth-child(1){animation-delay:.15s} .card > :nth-child(2){animation-delay:.35s}
+  .card > :nth-child(3){animation-delay:.55s} .card > :nth-child(4){animation-delay:.75s}
+  .card > :nth-child(5){animation-delay:.95s} .card > :nth-child(6){animation-delay:1.15s}
+  .card > :nth-child(7){animation-delay:1.35s} .card > :nth-child(8){animation-delay:1.55s}
+  .card > :nth-child(9){animation-delay:1.75s} .card > :nth-child(n+10){animation-delay:1.95s}
+  @keyframes rise { to { opacity:1; transform:none; } }
+
+  /* gold foil, matched to the wedding website */
+  .foil { color:#C79A5E;
+    background:linear-gradient(117.55deg,#EAB872 0%,#8A5A30 22%,#C99B5F 38%,#F0C98A 50%,#B98A50 62%,#80522B 80%,#EAB872 100%);
+    background-size:220% 100%; -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; animation:foil 9s ease-in-out infinite alternate; }
+  @keyframes foil { from { background-position:0% 50%; } to { background-position:100% 50%; } }
+  .mono { width:min(46%,190px); height:auto; display:block; margin:0 auto; overflow:visible; }
+  .greet { font-style:italic; font-size:clamp(17px,4.3vw,20px); color:rgba(245,241,233,.78);
+    margin-top:clamp(14px,3.5vw,22px); }
+  .eyebrow { font-family:'Cinzel',serif; font-weight:500; text-transform:uppercase;
+    font-size:clamp(11px,2.9vw,13.5px); letter-spacing:clamp(.26em,1.6vw,.42em); text-indent:.3em; color:#A7A4A0;
+    margin-top:clamp(22px,5.5vw,34px); text-wrap:balance; }
+  .names { font-weight:400; text-transform:uppercase; font-size:clamp(29px,8.3vw,50px); line-height:1.1;
+    letter-spacing:.03em; margin-top:clamp(14px,3.6vw,22px); }
+  .names .n { display:block; }
+  .names .amp { display:block; font-style:italic; text-transform:none; color:#F5F1E9;
+    -webkit-text-fill-color:#F5F1E9; font-size:.62em; line-height:1.35; opacity:.85; }
+  .request { font-style:italic; font-size:clamp(18px,4.6vw,22px); line-height:1.5;
+    color:rgba(245,241,233,.86); margin-top:clamp(16px,4vw,24px); }
+
+  .rule { width:120px; height:1px; background:rgba(167,164,160,.45); margin:clamp(26px,6.5vw,38px) auto 0;
+    position:relative; }
+  .rule::after { content:''; position:absolute; left:50%; top:50%; width:5px; height:5px;
+    background:#A7A4A0; transform:translate(-50%,-50%) rotate(45deg); }
+
+  .when { margin-top:clamp(26px,6.5vw,38px); }
+  .date { text-wrap:balance; font-weight:500; font-size:clamp(24px,6.4vw,34px); line-height:1.22; }
+  .year { font-style:italic; font-size:clamp(18px,4.6vw,22px); color:rgba(245,241,233,.8); margin-top:4px; }
+  .time { font-family:'Cinzel',serif; text-transform:uppercase; font-size:clamp(12.5px,3.3vw,15px);
+    letter-spacing:.3em; text-indent:.3em; color:#F5F1E9; margin-top:clamp(18px,4.4vw,24px); }
+  .quiet { font-style:italic; font-size:clamp(16px,4.1vw,18px); color:rgba(167,164,160,.95); margin-top:8px; }
+
+  .where { margin-top:clamp(26px,6.5vw,38px); }
+  .venue { font-family:'Cinzel',serif; text-transform:uppercase; font-size:clamp(15px,4.1vw,20px);
+    letter-spacing:.2em; text-indent:.2em; line-height:1.5; color:#F5F1E9; text-wrap:balance; }
+  .city { font-family:'Cinzel',serif; text-transform:uppercase; font-size:clamp(11px,2.9vw,13.5px);
+    letter-spacing:.32em; text-indent:.32em; color:#A7A4A0; margin-top:10px; }
+
+  .label { font-family:'Cinzel',serif; text-transform:uppercase; font-size:clamp(11px,2.9vw,13px);
+    letter-spacing:.34em; text-indent:.34em; color:#A7A4A0; }
+  .attire { margin-top:clamp(26px,6.5vw,38px); }
+  .attire p { font-size:clamp(18px,4.6vw,21px); margin-top:10px; color:#F5F1E9; }
+
+  .reply { margin-top:clamp(30px,7.5vw,44px); }
+  .btn { font-family:'Cinzel',serif; font-weight:500; font-size:clamp(14px,3.7vw,16px); letter-spacing:.3em;
+    text-indent:.3em; text-transform:uppercase; color:#090909;
+    background:linear-gradient(180deg,#d2cfcb,#8f8c88); border:none; border-radius:2px;
+    padding:17px 52px; min-height:52px; text-decoration:none; display:inline-block;
+    box-shadow:0 10px 30px rgba(0,0,0,.5); transition:filter .25s ease, transform .25s ease; }
+  .btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+  .btn:focus-visible, .link:focus-visible { outline:1px solid #F5F1E9; outline-offset:4px; }
+  .by { font-size:clamp(17px,4.4vw,20px); color:#F5F1E9; margin-top:clamp(16px,4vw,20px); }
+  .how { font-style:italic; font-size:clamp(15px,3.9vw,17px); color:rgba(167,164,160,.95);
+    margin-top:6px; line-height:1.5; }
+
+  .links { display:flex; gap:10px 12px; flex-wrap:wrap; justify-content:center;
+    margin-top:clamp(26px,6.5vw,36px); }
+  .link { font-family:'Cinzel',serif; font-size:clamp(11.5px,3vw,13px); letter-spacing:.16em;
+    text-transform:uppercase; color:#A7A4A0; border:1px solid rgba(167,164,160,.5); border-radius:2px;
+    padding:12px 18px; min-height:44px; text-decoration:none; display:inline-flex; align-items:center;
+    transition:color .25s ease, border-color .25s ease; }
+  .link:hover { color:#F5F1E9; border-color:rgba(245,241,233,.7); }
+
+  .foot { font-style:italic; font-size:clamp(15px,3.9vw,17px); letter-spacing:.06em;
+    color:rgba(167,164,160,.85); margin-top:clamp(28px,7vw,40px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card > * { animation:none; opacity:1; transform:none; }
+    .dust { display:none; }
+    .foil { animation:none; }
+  }
+  .time, .city { text-wrap:balance; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<main class="wrap">
+  <div class="card">
+    <img class="mono" src="ad-logo.webp" width="520" height="425" alt="A and D monogram">
+    <div class="greet" id="greet" hidden></div>
+    <div class="eyebrow">Together with Their Families</div>
+    <h1 class="names"><span class="n foil">Alyssa Vera</span><span class="amp">&amp;</span><span class="n foil">Derek Pacqu&eacute;</span></h1>
+    <p class="request">request the honor of your presence<br>at the celebration of their marriage</p>
+
+    <div class="when">
+      <div class="rule" style="margin-top:0"></div>
+      <div class="date" style="margin-top:clamp(26px,6.5vw,38px)"><span class="foil">Sunday, the fourteenth of February</span></div>
+      <div class="year">two thousand twenty-seven</div>
+      <div class="time">Ceremony at Half Past Five</div>
+      <div class="quiet">Doors open at five o&rsquo;clock</div>
+    </div>
+
+    <div class="where">
+      <div class="venue">The Ancient Spanish Monastery</div>
+      <div class="city">North Miami Beach, Florida</div>
+      <div class="quiet" style="margin-top:14px">Reception to follow</div>
+    </div>
+
+    <div class="attire">
+      <div class="label">Attire</div>
+      <p>Black Tie Optional &middot; Masks Encouraged</p>
+    </div>
+
+    <div class="reply">
+      <a class="btn" href="https://www.zola.com/wedding/alyssaandderekfebruary14/rsvp" target="_blank" rel="noopener">RSVP</a>
+      <p class="by">Kindly reply by Monday, January 4, 2027</p>
+      <p class="how">Enter your first and last name to find your invitation</p>
+    </div>
+
+    <div class="links">
+      <a class="link" href="https://www.zola.com/wedding/alyssaandderekfebruary14" target="_blank" rel="noopener">Travel &amp; Details</a>
+      <a class="link" href="alyssa-derek-invitation.ics">Add to Calendar</a>
+    </div>
+
+    <div class="foot">We can&rsquo;t wait to celebrate with you</div>
+  </div>
+</main>
+<script>
+  // personal greeting from ?g= (same links as the save the date)
+  (function(){
+    var g = new URLSearchParams(location.search).get('g');
+    if (!g) return;
+    var el = document.getElementById('greet');
+    el.textContent = 'Dear ' + g + ',';
+    el.hidden = false;
+  })();
+
+  // floating dust, same as the save the date
+  if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    for (var i = 0; i < 20; i++) {
+      var p = document.createElement('div'); p.className = 'dust';
+      var s = 2 + Math.random() * 3.5;
+      p.style.width = p.style.height = s + 'px';
+      p.style.left = (Math.random() * 100) + 'vw';
+      p.style.top = (55 + Math.random() * 50) + 'vh';
+      p.style.setProperty('--o', (0.1 + Math.random() * 0.32).toFixed(2));
+      p.style.animationDuration = (14 + Math.random() * 18) + 's';
+      p.style.animationDelay = (-Math.random() * 20) + 's';
+      document.body.appendChild(p);
+    }
+  }
+</script>
+</body>
+</html>

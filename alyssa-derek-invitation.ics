@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//AlyssaDerek//Invitation//EN
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:DAYLIGHT
+DTSTART:19700308T020000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:19701101T020000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:alyssa-derek-2027@savethedate
+DTSTAMP:20261112T020000Z
+SEQUENCE:1
+DTSTART;TZID=America/New_York:20270214T170000
+DTEND;TZID=America/New_York:20270214T230000
+SUMMARY:Alyssa & Derek's wedding
+LOCATION:The Ancient Spanish Monastery\, 16711 W Dixie Hwy\, North Miami Beach\, FL
+DESCRIPTION:Doors open at 5 PM\, ceremony at 5:30 PM\, reception to follow. Black tie optional. Masks encouraged. Details: https://www.zola.com/wedding/alyssaandderekfebruary14
+URL:https://www.zola.com/wedding/alyssaandderekfebruary14
+END:VEVENT
+END:VCALENDAR
