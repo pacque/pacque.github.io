@@ -275,6 +275,21 @@
 
   var IMG_AR = 572 / 1024, HALL_H = 0.8, VPY = 0.517, ZFULL = 1 / HALL_H;
   // the walk is one unbroken film; the words come and go over it at these moments (seconds)
+  // ---------- tracking: which household opened, came through the doors, reached and tapped the RSVP ----------
+  var TRACK_URL = 'https://script.google.com/macros/s/AKfycbxBf4s02clTJ3wnW7EI16MfsOAeQY9Tl7mhavk6Itu2BbjCD-vTguHuBn6NTr03RmV-/exec';   // the invitation tracking web app address goes here
+  var tid = params.get('t'), sentOnce = {};
+  function track(a){
+    if (!TRACK_URL || !tid || sentOnce[a]) return; sentOnce[a] = 1;
+    try { new Image().src = TRACK_URL + '?a=' + a + '&id=' + encodeURIComponent(tid) + '&n=' + Date.now(); } catch(err){}
+  }
+  if (TRACK_URL && tid) {
+    // count an open only on a real human signal, so link previews and prefetchers are not logged
+    var opened1 = function(){ track('o'); };
+    ['pointerdown', 'touchstart', 'keydown'].forEach(function(ev){ window.addEventListener(ev, opened1, { once:true, passive:true }); });
+    var arm = function(){ if (document.visibilityState === 'visible') setTimeout(opened1, 2500); };
+    document.addEventListener('visibilitychange', arm); arm();
+  }
+
   var STARTS = [0, 6.3, 14.3], ENTER_MS = 3200, FILM = 16.29;
   var frame = document.getElementById('frame'), hall = document.getElementById('hall'), wall = document.getElementById('wall');
   var scrim = document.getElementById('scrim'), doors = document.getElementById('doors'), threshold = document.getElementById('threshold');
@@ -318,6 +333,7 @@
     });
     scrim.style.opacity = k > 0 ? '1' : '0';
     document.body.classList.toggle('arrived', k >= stations.length);
+    if (k >= stations.length) track('r');
     document.body.classList.toggle('canback', k >= 2);
   }
   function stageAt(time){ var k = 1; for (var i = 1; i < STARTS.length; i++) if (time >= STARTS[i]) k = i + 1; return k; }
@@ -424,6 +440,7 @@
     }
     // wake the film inside this tap so phones allow it to play later, but keep the hall perfectly still for now
     try { var pp = vid.play(); vid.pause(); if (pp && pp.catch) pp.catch(function(){}); } catch(err){}
+    track('d');
     initAudio();
     if (actx) { if (actx.state === 'suspended') actx.resume(); toll(0, .5); toll(2.1, .3); decodeMusic().catch(function(){}); }
     setTimeout(function(){ entering = true; }, REDUCED ? 50 : 2300);
@@ -474,7 +491,7 @@
   }
   document.addEventListener('visibilitychange', function(){ if (document.hidden) hush(); else unhush(); });
   window.addEventListener('pagehide', hush);
-  Array.prototype.forEach.call(document.querySelectorAll('a[target="_blank"]'), function(lk){ lk.addEventListener('click', function(){ hush(); setTimeout(function(){ if (!document.hidden) unhush(); }, 1500); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('a[target="_blank"]'), function(lk){ lk.addEventListener('click', function(){ track(lk.classList.contains('btn') ? 'c' : 't'); hush(); setTimeout(function(){ if (!document.hidden) unhush(); }, 1500); }); });
   window.addEventListener('focus', function(){ if (!document.hidden) unhush(); });
   // coming back to the page: pick the walk up where it left off
   document.addEventListener('visibilitychange', function(){ lastNow = 0; if (!document.hidden && walking && !held && !vid.ended && t < FILM - .15) { var vp = vid.play(); if (vp && vp.catch) vp.catch(function(){}); } });
